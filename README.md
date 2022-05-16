@@ -1,5 +1,10 @@
 #
 
+- [01 rustc](#01-rustc)
+- [02 cargo](#02-cargo)
+- [03 Guessing game](#03-guessing-game)
+  - [Using a `crate`](#using-a-crate)
+
 ## 01 rustc
 
 ```rs
