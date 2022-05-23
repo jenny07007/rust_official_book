@@ -7,6 +7,7 @@
 - [05 Data Types](#05-data-types)
 - [06 Functions](#06-functions)
 - [07 Control Flow](#07-control-flow)
+- [08 Ownership](#08-ownership)
 
 ## 01 rustc
 
@@ -63,3 +64,7 @@ cargo build
 ## 07 Control Flow
 
 [ControlFlow](./ControlFlow.md)
+
+## 08 Ownership
+
+[OwnerShip](./OwnerShop.md)
