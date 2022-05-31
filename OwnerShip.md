@@ -1,5 +1,17 @@
 #
 
+- [Ownership rules](#ownership-rules)
+- [The string type](#the-string-type)
+- [Move && Double free error](#move--double-free-error)
+- [Clone](#clone)
+- [Copy - Stack-only data](#copy---stack-only-data)
+- [Ownership and functions](#ownership-and-functions)
+- [Return Values and Scope](#return-values-and-scope)
+- [References and Borrowing](#references-and-borrowing)
+- [Mutable References](#mutable-references)
+- [Dangling References](#dangling-references)
+- [The rules of References](#the-rules-of-references)
+
 **Ownership** is a set of rules that governs how a Rust program manages memory.
 
 **Stack** -- last in, first out. Adding data is called 'pushing onto the stack', and removing data is called 'popping off the stack.'
@@ -176,3 +188,112 @@ fn calculate_length(s: String) -> (String, usize) {
 ```
 
 But this is too much ceremony and a lot of work for a concept that should be common. Luckily for us, Rust has a feature for using a value without transferring ownership, called **references**.
+
+## References and Borrowing
+
+A reference is like a pointer in that it's an address we can follow to access data stored at that address that is owned by some other variable.
+Unlike a pointer, a reference is guaranteed to point to a valid value of a particular type.
+
+```rs
+fn main() {
+    let s1 = String::from("hello");
+
+  // the ampersand (&) represent references, and they allow you to refer
+  // to some value without taking ownership of it.
+    let len = calculate_length(&s1);
+
+    println!("The length of '{}' is {}.", s1, len);
+}
+
+// s is a reference to a String
+fn calculate_length(s: &String) -> usize {
+    s.len()
+} // Here, s goes out of scope. But because it does not have ownership of what it refers to, nothing happens.
+```
+
+> **Note:** The opposite of referencing by using the ampersand (&) is dereferencing, which is done by using the asterisk (\*).
+
+We call the action of creating a reference **borrowing**. We are not allowed to modify the value that the reference points to.
+
+## Mutable References
+
+To allow us to modify a borrowed value.
+
+```rs
+fn main() {
+    // create a mutable reference with `&mut s` where we call the `change` function
+    let mut s = String::from("hello");
+
+    change(&mut s);
+}
+// accept a mutable reference with `some_string`
+fn change(some_string: &mut String) {
+    some_string.push_str(", world");
+}
+```
+
+Mutable reference have one big restriction: you can have one mutable reference to a particular piece of data at a time. The benefit of having this restriction is that Rust can prevent data races at complie time. A `data race` is similar to rece condition and happens when these three behaviours occur.
+
+- Two or more pointers access the same data at the same time.
+- At least one of the pointers is being used to write to the data
+- There's no mechanism being used to synchronize access to the data.
+
+```rs
+let mut s = String::from("hello");
+
+// use curly brackers to create a create a new scope
+{
+    let r1 = &mut s;
+} // r1 goes out of scope here, so we can make a new reference with no problems.
+
+let r2 = &mut s;
+```
+
+We cannot have a mutable reference while we have an immutable one to the same value
+
+```rs
+let mut s = String::from("hello");
+let r1 = &s; // no problem
+let r2 = &s; // no problem
+let r3 = &mut s; // BIG PROBLEM
+println!("{}, {}, and {}", r1, r2, r3);
+```
+
+```rs
+let mut s = String::from("hello");
+let r1 = &s; // no problem
+let r2 = &s; // no problem
+println!("{} and {}", r1, r2);
+let r3 = &mut s; // no problem
+println!("{}", r3);
+```
+
+## Dangling References
+
+`dangling pointer` -- a pointer that references a location in memory that may have been given to someone else -- by freeing some moemory while preserving a pointer to that memory.
+
+```rs
+fn main() {
+    let reference_to_nothing = dangle();
+}
+
+fn dangle() -> &String { // dangle returns a reference to a String
+    let s = String::from("hello"); // s is a new String
+
+    &s // we return a reference to the String, s
+} // Here, s goes out of scope, and is dropped. Its memory goes away.
+// Danger! Danger!
+```
+
+```rs
+// this works without any problems. Ownership is moved out, and nothing is deallocated
+fn no_dangle() -> String{
+  let s = String::from("hello");
+  s
+}
+```
+
+## The rules of References
+
+- At any given time, you can have **either** one mutable reference **or** any number of immutable references.
+- References must always be valid.

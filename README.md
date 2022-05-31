@@ -67,4 +67,4 @@ cargo build
 
 ## 08 Ownership
 
-[OwnerShip](./OwnerShop.md)
+[OwnerShip](./OwnerShip.md)
