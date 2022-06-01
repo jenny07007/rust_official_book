@@ -11,6 +11,12 @@
 - [Mutable References](#mutable-references)
 - [Dangling References](#dangling-references)
 - [The rules of References](#the-rules-of-references)
+- [The slice type](#the-slice-type)
+- [String slices](#string-slices)
+- [String literals are slices](#string-literals-are-slices)
+- [String slices as parameters](#string-slices-as-parameters)
+- [Other slices](#other-slices)
+- [Summary](#summary)
 
 **Ownership** is a set of rules that governs how a Rust program manages memory.
 
@@ -297,3 +303,148 @@ fn no_dangle() -> String{
 
 - At any given time, you can have **either** one mutable reference **or** any number of immutable references.
 - References must always be valid.
+
+## The slice type
+
+A slice is kind of reference, so it does not have ownership
+
+```rs
+fn  first_word(s: &String) -> usize {
+    let bytes = s.as_bytes(); // convert String to an array of bytes
+
+    // iterate -> `iter` is a method that returns each element in a collection and
+    // that `enumerate` wraps the result of `iter` and returns each element as part of a tuple insted.
+    // becuase the  `emuerate` method returns a tuple, we can use patterns to destructure that tuple
+    for (i, &item) in bytes.iter().enumerate() {
+        // we specify a pattern that has `i` for the index in the tuple and `&item` for the single byte in the tuple.
+        // because we get a reference to tje element from `.iter().enumerate()`, we use `&` in the pattern.
+        // we search for the byte that represents the space by using the byte literal syntax.
+        // if we find a space, we return the position. otherwise, we return the length of the string by using `.len()`.
+        if item == b' ' {
+            return i;
+        }
+    }
+
+    s.len()
+```
+
+We are returning a usize on its own, but it's only a meaningful number on the context of the `&String`. Because it's a separate value from the `String`, there's no guarantee that it will still be valid in the future
+
+## String slices
+
+```rs
+let s = String::from("hello world");
+
+let hello = &s[0..5]; // a reference to a portion of the String
+// or let hello = &s[..5];
+let world = &s[6..11];
+```
+
+```rs
+let s = String::from("hello");
+let len = s.len();  // 5
+let slice = &s[3..len]; // lo
+// or let slice = &s[3..];
+```
+
+```rs
+let s = String::from("hello");
+let len = s.len();  // 5
+let slice = &s[0..len]; // hello
+let slice = &s[..]; // hello
+```
+
+> String slice range indices must occur at valid UTF-8 character boundaries. If you attempt to create a string slice in the middle of a multibyte character, you’ll get an error.
+
+```rs
+fn main() {
+
+    // if we have an immuatable referebce to something, we cannot also take a mutable reference.
+    // because `clear` needs to truncate the String, it needs to get a mutable reference
+    let s = String::from("hello world");
+
+    let w = first_word(&s);
+    s.clear(); // slice makes this bug impossibe. -> error
+
+    println!("first word: {}", w);
+}
+
+fn first_word(s: &String) -> &str {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' '{
+            return &s[0..i];
+        }
+    }
+    &s[..]
+}
+```
+
+## String literals are slices
+
+The type of `s` here is `&str`: it's a slice pointing to the specific point of the binary.That's why string literals are immutable; `&str` is a an immutable reference.
+
+```rs
+let s = "hello world";
+```
+
+## String slices as parameters
+
+```rs
+fn first_word(s: &String) -> &str { }
+
+// more experienced. because it allows us to use the same function on both `&String` values and `&str` values.
+// if we have a string slice, we can pass it in directly. if we have a `String`, we can pass a slice of the `String` or a reference to the `String`. --> `deref coercions`
+fn first_word(s: &str) -> &str{ }
+```
+
+```rs
+fn main() {
+    let my_string = String::from("hello world");
+
+    // `first_word` works on slices of `String`s, whether partial or whole
+    let word = first_word(&my_string[0..6]);
+    let word = first_word(&my_string[..]);
+    // `first_word` also works on references to `String`s,
+    // which are equivalent to whole slices of `String`s
+    let word = first_word(&my_string);
+
+    let my_string_literal = "hello world";
+
+    // `first_word` works on slices of string literals, whether partial or whole
+    let word = first_word(&my_string_literal[0..6]);
+    let word = first_word(&my_string_literal[..]);
+
+    // because string literals *are* string slices already,
+    // this works without the slice syntax
+    let word = first_word(my_string_literal);
+
+    println!("first word: {}", word);
+}
+
+fn first_word(s: &str) -> &str {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' '{
+            return &s[0..i];
+        }
+    }
+    &s[..]
+}
+```
+
+## Other slices
+
+The slice has the type `&[i32]`.It works the same way as string slices do, by storing a reference to the first element and a length.
+
+```rs
+let a = [1, 2, 3, 4, 5];
+let slice = &a[1..3];
+assert_eq!(slice, &[2, 3]);
+```
+
+## Summary
+
+The concept of ownership, borrowing, and slices ensure memory safety in Rust programs at compile time. The Rust language gives you control over your memory usage in the same way as other systems programming languages, but having the owner of data automatically clean up that data when the owner goes out of scope means you don't have to write and debug extra code to get this control.
