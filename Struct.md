@@ -6,6 +6,8 @@
 - [Using tuple structs without named fields to create different types](#using-tuple-structs-without-named-fields-to-create-different-types)
 - [Unit-like structs without any fields](#unit-like-structs-without-any-fields)
 - [Ownership of struct data](#ownership-of-struct-data)
+- [examples](#examples)
+- [Summary](#summary)
 
 ## Using strcts to structure related data
 
@@ -111,3 +113,11 @@ fn main() {
   }
 }
 ```
+
+## examples
+
+[struct examples](./rectangles/)
+
+## Summary
+
+structs let you create custom types that are meaningful for your domain.By using structs, you can keep associated pieces of data connected to each piece to make you code clear. In `impl`, you can define functions that are associated with your type, and methods are a kind of associated function that let you specify the behavior of your structs have.
