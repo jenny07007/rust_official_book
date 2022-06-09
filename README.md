@@ -9,6 +9,7 @@
 - [07 Control Flow](#07-control-flow)
 - [08 Ownership](#08-ownership)
 - [09 Strucs](#09-strucs)
+- [10 Enums and pattern matching](#10-enums-and-pattern-matching)
 
 ## 01 rustc
 
@@ -73,3 +74,7 @@ cargo build
 ## 09 Strucs
 
 [Strucs](./Strucs.md)
+
+## 10 Enums and pattern matching
+
+[Enums](./Enums.md)
