@@ -10,6 +10,7 @@
 - [08 Ownership](#08-ownership)
 - [09 Strucs](#09-strucs)
 - [10 Enums and pattern matching](#10-enums-and-pattern-matching)
+- [11 Packages, Crates, and Modules](#11-packages-crates-and-modules)
 
 ## 01 rustc
 
@@ -78,3 +79,7 @@ cargo build
 ## 10 Enums and pattern matching
 
 [Enums](./Enums.md)
+
+## 11 Packages, Crates, and Modules
+
+[PCM](./PCM.md)
