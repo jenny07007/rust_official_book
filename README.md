@@ -73,7 +73,7 @@ cargo build
 
 ## 09 Strucs
 
-[Strucs](./Strucs.md)
+[Structs](./Struct.md)
 
 ## 10 Enums and pattern matching
 
