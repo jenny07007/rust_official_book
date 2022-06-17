@@ -4,6 +4,12 @@
 - [Paths for referring to an item in the module tree](#paths-for-referring-to-an-item-in-the-module-tree)
 - [Starting relative paths with `super`](#starting-relative-paths-with-super)
 - [Making structs and enums public](#making-structs-and-enums-public)
+- [Bring paths into scope with the `use` keyword](#bring-paths-into-scope-with-the-use-keyword)
+- [Re-exporting names with public `use`](#re-exporting-names-with-public-use)
+- [Using external packages](#using-external-packages)
+- [Using nested paths to clean up large use lists](#using-nested-paths-to-clean-up-large-use-lists)
+- [The glob operator](#the-glob-operator)
+- [Separating modules into different files](#separating-modules-into-different-files)
 
 ## Create a new library named `restaurant`
 
@@ -138,3 +144,129 @@ pub fn eat_at_restaurant(){
 Enums are not very useful useless their variants are public; the default for enum variants is to be public.
 
 Structs are often useful without their fields being public, so struct fields follow the general rule of everything being private be default unless annotated with `pub`.
+
+## Bring paths into scope with the `use` keyword
+
+Bringing the function's parent module into scope with `use` means we have to specify the parent module when calling the function. Specifying the parent module when calling the function makes it clear that the function is not locally defined while still minimizing repetition of the full path.
+
+```rs
+// src/lib.rs
+mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist() {}
+    }
+}
+
+use crate::front_of_house::hosting::add_to_waitlist;
+pub fn eat_at_restaurant() {
+    add_to_waitlist();
+}
+```
+
+When bringing in structs, enums, and other items with `use`, it's idiomatic to specify the full path.
+
+```rs
+use std::collection::HashMap;
+fn main() {
+    let mut map = HashMap::new();
+    map.insert(1, 2);
+}
+```
+
+Exception if we're bringing two items with the same name into scope with `use` statements, because Rust does not allow that.
+
+```rs
+// use parent modules distinguishes the two Result types.
+use std::fmt;
+use std::io;
+// or provide new names with as keyword
+use std::io::Result as IoResult;
+
+
+fn function1() -> fmt::Result {}
+fn function2() -> io::Result<()> {}
+fn function3() -> IoResult<()> {}
+```
+
+## Re-exporting names with public `use`
+
+When we bring a name into scope with `use`, the name available in the new scope is private.To enable the code that calls our code to refer to that name as if it had been defined in thhat code's scope, we can use the `pub use` keyword. This technique is called re-exporting because we're bringing an item into scope but also making that item available for others to bring into their scope.
+
+Re-exporting is useful when the internal structure of your code is different from how pargrammers calling your code would think about the domain.
+
+```rs
+// src/lib.rs
+mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist() {}
+    }
+}
+
+// reexporting the hosting module from root module
+pub use crate::front_of_house::hosting;
+
+pub fn eat_at_restaurant() {
+    hosting::add_to_waitlist();
+}
+```
+
+## Using external packages
+
+```toml
+rand = "0.8.3"
+```
+
+```rs
+use rand::Rng;
+// std a crate that's external to our package.
+// the standard library is shipped with the Rust languate, we don't need to change Cargo.toml
+use std::collection::HashMap;
+
+fn main() {
+    let screte_number = rand::thread_rng().gen_range(1..101);
+}
+```
+
+## Using nested paths to clean up large use lists
+
+```rs
+// main.rs
+use std::cmp::Ordering;
+use std::io::Write;
+use std::io;
+// instend
+use std::{cmp::Ordering, io};
+use std::io::{self, Write};
+```
+
+## The glob operator
+
+The glob operator is often used when testing to bring everything test into the `tests` module.
+
+```rs
+use std::collections::*;
+```
+
+## Separating modules into different files
+
+```rs
+// src/lib.rs
+mod front_of_house;
+pub use crate::front_of_house::hosting;
+
+pub fn eat_at_restaurant() {
+    hosting::add_to_waitlist();
+}
+```
+
+If we put `hosting.rs` in the src directory, the compiler would expect that code to be in a `hosting` module declared in the crate root, not as a child of the `front_of_house` module. The rules the compiler follows to know what files to look in for modules' code means the dorectories and files more closely match the module tree.
+
+```rs
+// src/front_of_house.rs
+pub mod hosting;
+```
+
+```rs
+// src/front_of_house/hosting.rs
+pub fn add_to_waitlist() {}
+```
