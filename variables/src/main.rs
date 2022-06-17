@@ -11,5 +11,5 @@ fn main() {
 
     let spaces = "     ";
     let spaces = spaces.len();
-    println!("{}", space);
+    println!("{}", spaces);
 }

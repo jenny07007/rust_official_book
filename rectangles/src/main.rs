@@ -4,7 +4,7 @@ struct Rectangle {
 }
 // getter
 impl Rectangle {
-    fn area(&self) -> bool {
+    fn _area(&self) -> bool {
         self.width > 0
     }
 
