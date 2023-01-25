@@ -1,10 +1,15 @@
 # Variables
 
+```rust
+// const variable
+const SUBSCRIBER_COUNT: u32 = 100_000;
+```
+
 Shadowing
 
 - Will get complier-time error if we accidentally try to reassign to this variable without using the `let` keyword.
 
-```rs
+```rust
 fn main() {
     let x = 5;
     let x = x + 1;
@@ -21,7 +26,7 @@ fn main() {
 
 - `let` can change the type of the value but reuse the same name.
 
-```rs
+```rust
 let spaces = "   ";
 let spaces = spaces.len();
 ```

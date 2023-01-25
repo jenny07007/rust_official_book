@@ -1,6 +1,6 @@
 # Control Flow
 
-```rs
+```rust
 // if expressions
 fn main() {
   let number = 3;
@@ -72,6 +72,10 @@ fn main() {
 
  for element in a {
     println!("the value is: {}", element);
+ }
+
+ for ele in a.iter() {
+  println!("the value is: {}", ele);
  }
 
 // countdown loop -- rev

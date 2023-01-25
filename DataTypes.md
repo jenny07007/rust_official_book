@@ -46,7 +46,7 @@
 
 `f32` and `f64` are the floating-point types in Rust. The `f32` type is a single-percision float, and `f64` has double precision.
 
-```rs
+```rust
 fn main() {
   let x = 2.0; // f64
   let y: f32 = 3.0; // f32
@@ -60,7 +60,7 @@ fn main() {
 6. The character type
    `char` type is four bytes in size and represents a Unicode scalar value, which means it can represent a lot more than just ASCII.
 
-```rs
+```rust
 fn main( ) {
   let c = 'z';
   let z = 'ℤ';
@@ -76,11 +76,17 @@ can group multiple values into one type
 
 - has a fixed length: once declared, they cannot grow or shrink in size.
 
-```rs
+```rust
 fn main() {
+  // tup - a fixed size array of related data that could be a different type
   let tup: (i32, f64, u8) = (500, 6.4, 1);
   let (x,y,z) = (500, 6.4, 1);
   println!("The value of y is: {}", y); // 6.4
+
+// destructuring tup
+  let (x:i32, y:f64, z:u8) = tup;
+// dot notation tup
+  let first_x:i32 = tup.1;
 
   let x: (i32, f64, u8) = (500, 6.4, 1);
   let five_hundred = x.0;
@@ -93,7 +99,7 @@ fn main() {
 
 - must have the same type
 
-```rs
+```rust
 fn mian() {
   let a = [1,2,3,4,5];
   let a: [i32; 5] = [1,2,3,4,5];
@@ -101,5 +107,12 @@ fn mian() {
 
   let first = a[0];
   let second = a[1];
+}
+```
+
+```rust
+fn main() {
+  let error_codes = [200, 404, 500];
+  let not_found = error_codes[1];
 }
 ```
