@@ -2,7 +2,7 @@
 
 - In Rust, variables are immutable by default
 
-```rs
+```rust
 let apple = 5 // immutable
 let mut orange = 6 // mutable
 ```
@@ -15,7 +15,7 @@ let mut orange = 6 // mutable
 - `Enums` are often used with `match`, a conditional that makes it convenient to excute different code based on which variant an enum value is when the conditional is evaluated.
 - `Result`'s variants are `Ok` and `Err`.
 
-```rs
+```rust
 // create a mutable variable that is currently bond to a new, empty instance of a `String`
 let mut guess = String::new();
 
@@ -34,11 +34,13 @@ io::stdin()
 
 ```toml
 rand = "0.8.3"
+# add colored dependence
+colored = "2.0.0"
 ```
 
 - We use a `match` expression to decide what to do next based on which variant of `Ordering` was returned from the call to `cmp` with the values in `guess` and `secret_number`.
 
-```rs
+```rust
 match guess.cmp(&secret_number) {
     Ordering::Less => println!("Too small!"),
     Ordering::Greater => println!("Too big!"),
@@ -46,9 +48,20 @@ match guess.cmp(&secret_number) {
   }
 ```
 
+- Change texts color
+
+```rust
+use colored::*;
+match guess.cmp(&secret_number) {
+    Ordering::Less => println!("{}", "Too small!".red()),
+    Ordering::Greater => println!("{}","Too big!".red()),
+    Ordering::Equal => println!("{}","You win!".green()),
+  }
+```
+
 - `i32`, a 32-bit number. `u32` , an unsigned 32-bit number. `i64`, a 64-bit number. `u64`, an unsigned 64-bit number.
 
-```rs
+```rust
 // Rust cannot compare a string and a number type
 // shadow the pervious value of guess with a new one
 let guess: u32 = guess.trim().parse().expect("Please type a number!");
