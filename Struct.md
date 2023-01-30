@@ -1,13 +1,14 @@
 #
 
-- [Using strcts to structure related data](#using-strcts-to-structure-related-data)
-- [Defining and instantiating structs](#defining-and-instantiating-structs)
-- [Creating instances from other instances with struct update syntax](#creating-instances-from-other-instances-with-struct-update-syntax)
-- [Using tuple structs without named fields to create different types](#using-tuple-structs-without-named-fields-to-create-different-types)
-- [Unit-like structs without any fields](#unit-like-structs-without-any-fields)
-- [Ownership of struct data](#ownership-of-struct-data)
-- [examples](#examples)
-- [Summary](#summary)
+- [](#)
+  - [Using strcts to structure related data](#using-strcts-to-structure-related-data)
+  - [Defining and instantiating structs](#defining-and-instantiating-structs)
+  - [Creating instances from other instances with struct update syntax](#creating-instances-from-other-instances-with-struct-update-syntax)
+  - [Using tuple structs without named fields to create different types](#using-tuple-structs-without-named-fields-to-create-different-types)
+  - [Unit-like structs without any fields](#unit-like-structs-without-any-fields)
+  - [Ownership of struct data](#ownership-of-struct-data)
+  - [examples](#examples)
+  - [Summary](#summary)
 
 ## Using strcts to structure related data
 
@@ -17,7 +18,7 @@ A `struct` is like an object's data attributes.
 
 ## Defining and instantiating structs
 
-```rs
+```rust
 struct User {
   active: bool,
   username: String,
@@ -55,7 +56,7 @@ In this example, we can no longer user `user1` after creating `user2` because th
 If we had given `user2` nwe `String` values for both `email` and `username`, and thus only used the `active` and `sign_in_count` values from `user1`, the `user1` would still be valid after creating `user2`.
 The types of `active` and `sign_in_count` are types that implement the `Copy` trait.
 
-```rs
+```rust
 fn main() {
   let user2 = User {
     email: String::from("user2@hello.com"),
@@ -68,7 +69,7 @@ fn main() {
 **Tuple structs** - have the added meaning the struct name provides but don't have names associated with their fields, rather they just have the types of the fields.
 Truple structs are useful when you want to give the whole tuple a name and make the tuple a different type from other tuples, and when naming each field as in a regular struct would be verbose or redundant.
 
-```rs
+```rust
 struct Color(i32, i32, i32);
 struct Point(i32, i32, i32);
 
@@ -83,7 +84,7 @@ fn main() {
 
 Unit-like structs are useful when you need to implement a trait on some type but don't have any data that you want to store in the type itself.
 
-```rs
+```rust
 // struct that does not have fields
 struct AlwaysEqual;
 
@@ -96,7 +97,7 @@ fn main() {
 
 Lifetimes - ensure that the data referenced by a struct is valid for as long as the struct is.
 
-```rs
+```rust
 struct User {
   username: &str,
   email: &str,
