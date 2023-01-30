@@ -1,28 +1,35 @@
 #
 
-- [Ownership rules](#ownership-rules)
-- [The string type](#the-string-type)
-- [Move && Double free error](#move--double-free-error)
-- [Clone](#clone)
-- [Copy - Stack-only data](#copy---stack-only-data)
-- [Ownership and functions](#ownership-and-functions)
-- [Return Values and Scope](#return-values-and-scope)
-- [References and Borrowing](#references-and-borrowing)
-- [Mutable References](#mutable-references)
-- [Dangling References](#dangling-references)
-- [The rules of References](#the-rules-of-references)
-- [The slice type](#the-slice-type)
-- [String slices](#string-slices)
-- [String literals are slices](#string-literals-are-slices)
-- [String slices as parameters](#string-slices-as-parameters)
-- [Other slices](#other-slices)
-- [Summary](#summary)
+- [](#)
+  - [Ownership rules](#ownership-rules)
+  - [The string type](#the-string-type)
+  - [Move \&\& Double free error](#move--double-free-error)
+  - [Clone](#clone)
+  - [Copy - Stack-only data](#copy---stack-only-data)
+  - [Ownership and functions](#ownership-and-functions)
+  - [Return Values and Scope](#return-values-and-scope)
+  - [References and Borrowing](#references-and-borrowing)
+  - [Mutable References](#mutable-references)
+  - [Dangling References](#dangling-references)
+  - [The rules of References](#the-rules-of-references)
+  - [The slice type](#the-slice-type)
+  - [String slices](#string-slices)
+  - [String literals are slices](#string-literals-are-slices)
+  - [String slices as parameters](#string-slices-as-parameters)
+  - [Other slices](#other-slices)
+  - [Summary](#summary)
+
+|                         | Pros                                                                                                       | Cons                                                                                                         |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Garbage collection      | **• Error free** <br/> • Faster write time                                                                 | • No control over memory <br /> • Slower and unpredicatable runtime performance <br /> • Larger program size |
+| Manual memory mangement | • Control over memory <br /> • Faster runtime<br /> • No Smaller program size <br />                       | • Error prone <br /> • Slower write time <br />                                                              |
+| Ownership model         | • Control over memory <br /> **• Error free** <br /> • Faster runtime <br /> • Smaller program size <br /> | • Slower write time. Learning curve (fighting with the borrow checker)                                       |
 
 **Ownership** is a set of rules that governs how a Rust program manages memory.
 
 **Stack** -- last in, first out. Adding data is called 'pushing onto the stack', and removing data is called 'popping off the stack.'
 
-**Heap** -- less organized.The momoyr allocator finds an empty spot in the heap that is big enough, marks it as being in use, and returns a **pointer**, which is the addrss of that location. This process is called **allocating on the heap** or **allocating**.
+**Heap** -- less organized.The memory allocator finds an empty spot in the heap that is big enough, marks it as being in use, and returns a **pointer**, which is the addrss of that location. This process is called **allocating on the heap** or **allocating**.
 
 Pushing to the stack is faster than allocating on the heap because the allocator never has to search for a place to store new data.
 Accessing data in the heap is slower than accessing data on the stack because you have to follow a pointer to get there.
@@ -30,12 +37,12 @@ Accessing data in the heap is slower than accessing data on the stack because yo
 ## Ownership rules
 
 - Each value in Rust has a variable that's called its **owner**.
-- There can only be one owner at a time.
-- When the owner goes out of scope, the value will be dropped.
+- **There can only be one owner at a time.**
+- **When the owner goes out of scope, the value will be dropped.**
 
 ## The string type
 
-```rs
+```rust
 // a string from a string literal using `from`
 // immutable string literal - hardcode into the final excutable
 let s = String::from("hello");
@@ -51,7 +58,7 @@ h.push_str(", world!");
 
 Rust takes a different path: the memory is automatically returned once the variable that owns it goes out of scope.
 
-```rs
+```rust
 {
   let s = String::from("hello"); // s is valid from this point forward
   // do stuff with s
@@ -66,7 +73,7 @@ Rust calls the `drop` function automatically at the closing curly bracket, and c
 when s2 and s1 go out of scope, they will both try to free the same memory.
 To ensure memory safety, after the line let `s2` = `s1`, Rust considers `s1` as no longer valid. Therefore, Rust doesn’t need to free anything when `s1` goes out of scope.
 
-```rs
+```rust
 // s1 was moved to s2
 let s1 = String::from("hello");
 let s2 = s1; // s2 is a reference to s1
@@ -82,7 +89,7 @@ In addition, there’s a design choice that’s implied by this: Rust will never
 
 Deeply copy the heap data of the `String`. When you see a call to clone, you know that some arbitrary code is being executed and that code may be expensive.
 
-```rs
+```rust
 let s1 = String::from("hello");
 let s2 = s1.clone();
 
@@ -93,7 +100,7 @@ println!("s1 = {}, s2 = {}", s1, s2);
 
 If a type implements the `Copy` trait, a variable is still valid after assignment to another variable. Rust won’t let us annotate a type with `Copy` if the type, or any of its parts, has implemented the `Drop` trait. If the type needs something special to happen when the value goes out of scope and we add the Copy annotation to that type, we’ll get a compile-time error.
 
-```rs
+```rust
 let x = 5; // x is on the stack
 let y = x;
 
@@ -112,7 +119,7 @@ Here are some of the types that implement Copy:
 
 If we tried to use `s` after the call to `takes_ownership, Rust would throw a compile-time error. These static checks protect us from mistakes.
 
-```rs
+```rust
 fn main() {
     let s = String::from("hello");  // s comes into scope
 
@@ -143,7 +150,7 @@ fn makes_copy(some_integer: i32) { // some_integer comes into scope
 
 Returning values can also transfer ownership.
 
-```rs
+```rust
 fn main() {
     let s1 = gives_ownership();         // gives_ownership moves its return
                                         // value into s1
@@ -176,7 +183,7 @@ fn takes_and_gives_back(a_string: String) -> String { // a_string comes into sco
 
 The ownership of a variable follows the same pattern every time: assigning a value to another variable moves it. When a variable that includes data on the heap goes out of scope, the value will be cleaned up by `drop` unless ownership of the data has been moved to another variable.
 
-```rs
+```rust
 // return multiple values using a tuple
 fn main() {
     let s1 = String::from("hello");
@@ -200,7 +207,7 @@ But this is too much ceremony and a lot of work for a concept that should be com
 A reference is like a pointer in that it's an address we can follow to access data stored at that address that is owned by some other variable.
 Unlike a pointer, a reference is guaranteed to point to a valid value of a particular type.
 
-```rs
+```rust
 fn main() {
     let s1 = String::from("hello");
 
@@ -225,7 +232,7 @@ We call the action of creating a reference **borrowing**. We are not allowed to 
 
 To allow us to modify a borrowed value.
 
-```rs
+```rust
 fn main() {
     // create a mutable reference with `&mut s` where we call the `change` function
     let mut s = String::from("hello");
@@ -244,7 +251,7 @@ Mutable reference have one big restriction: you can have one mutable reference t
 - At least one of the pointers is being used to write to the data
 - There's no mechanism being used to synchronize access to the data.
 
-```rs
+```rust
 let mut s = String::from("hello");
 
 // use curly brackers to create a create a new scope
@@ -257,7 +264,7 @@ let r2 = &mut s;
 
 We cannot have a mutable reference while we have an immutable one to the same value
 
-```rs
+```rust
 let mut s = String::from("hello");
 let r1 = &s; // no problem
 let r2 = &s; // no problem
@@ -265,7 +272,7 @@ let r3 = &mut s; // BIG PROBLEM
 println!("{}, {}, and {}", r1, r2, r3);
 ```
 
-```rs
+```rust
 let mut s = String::from("hello");
 let r1 = &s; // no problem
 let r2 = &s; // no problem
@@ -278,7 +285,7 @@ println!("{}", r3);
 
 `dangling pointer` -- a pointer that references a location in memory that may have been given to someone else -- by freeing some moemory while preserving a pointer to that memory.
 
-```rs
+```rust
 fn main() {
     let reference_to_nothing = dangle();
 }
@@ -291,7 +298,7 @@ fn dangle() -> &String { // dangle returns a reference to a String
 // Danger! Danger!
 ```
 
-```rs
+```rust
 // this works without any problems. Ownership is moved out, and nothing is deallocated
 fn no_dangle() -> String{
   let s = String::from("hello");
@@ -308,7 +315,7 @@ fn no_dangle() -> String{
 
 A slice is kind of reference, so it does not have ownership
 
-```rs
+```rust
 fn  first_word(s: &String) -> usize {
     let bytes = s.as_bytes(); // convert String to an array of bytes
 
@@ -332,7 +339,7 @@ We are returning a usize on its own, but it's only a meaningful number on the co
 
 ## String slices
 
-```rs
+```rust
 let s = String::from("hello world");
 
 let hello = &s[0..5]; // a reference to a portion of the String
@@ -340,14 +347,14 @@ let hello = &s[0..5]; // a reference to a portion of the String
 let world = &s[6..11];
 ```
 
-```rs
+```rust
 let s = String::from("hello");
 let len = s.len();  // 5
 let slice = &s[3..len]; // lo
 // or let slice = &s[3..];
 ```
 
-```rs
+```rust
 let s = String::from("hello");
 let len = s.len();  // 5
 let slice = &s[0..len]; // hello
@@ -356,7 +363,7 @@ let slice = &s[..]; // hello
 
 > String slice range indices must occur at valid UTF-8 character boundaries. If you attempt to create a string slice in the middle of a multibyte character, you’ll get an error.
 
-```rs
+```rust
 fn main() {
 
     // if we have an immuatable referebce to something, we cannot also take a mutable reference.
@@ -385,13 +392,13 @@ fn first_word(s: &String) -> &str {
 
 The type of `s` here is `&str`: it's a slice pointing to the specific point of the binary.That's why string literals are immutable; `&str` is a an immutable reference.
 
-```rs
+```rust
 let s = "hello world";
 ```
 
 ## String slices as parameters
 
-```rs
+```rust
 fn first_word(s: &String) -> &str { }
 
 // more experienced. because it allows us to use the same function on both `&String` values and `&str` values.
@@ -399,7 +406,7 @@ fn first_word(s: &String) -> &str { }
 fn first_word(s: &str) -> &str{ }
 ```
 
-```rs
+```rust
 fn main() {
     let my_string = String::from("hello world");
 
@@ -439,7 +446,7 @@ fn first_word(s: &str) -> &str {
 
 The slice has the type `&[i32]`.It works the same way as string slices do, by storing a reference to the first element and a length.
 
-```rs
+```rust
 let a = [1, 2, 3, 4, 5];
 let slice = &a[1..3];
 assert_eq!(slice, &[2, 3]);
