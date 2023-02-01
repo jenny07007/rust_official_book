@@ -1,15 +1,16 @@
 #
 
-- [Enums - Enumerations](#enums---enumerations)
-- [Defining an enum](#defining-an-enum)
-- [Enum values](#enum-values)
-- [Option enum](#option-enum)
-- [The `match` Control Flow Construct](#the-match-control-flow-construct)
-- [Patterns that bind to values](#patterns-that-bind-to-values)
-- [Matching with`Option<T>`](#matching-withoptiont)
-- [matches are exhaustive](#matches-are-exhaustive)
-- [`catch-all` pattern and the `_` placeholder](#catch-all-pattern-and-the-_-placeholder)
-- [Concise Control Flow with `if let`](#concise-control-flow-with-if-let)
+- [](#)
+  - [Enums - Enumerations](#enums---enumerations)
+  - [Defining an enum](#defining-an-enum)
+  - [Enum values](#enum-values)
+  - [Option enum](#option-enum)
+  - [The `match` Control Flow Construct](#the-match-control-flow-construct)
+  - [Patterns that bind to values](#patterns-that-bind-to-values)
+  - [Matching with`Option<T>`](#matching-withoptiont)
+  - [matches are exhaustive](#matches-are-exhaustive)
+  - [`catch-all` pattern and the `_` placeholder](#catch-all-pattern-and-the-_-placeholder)
+  - [Concise Control Flow with `if let`](#concise-control-flow-with-if-let)
 
 ## Enums - Enumerations
 
@@ -17,7 +18,7 @@ Allows us to define a type by enumerating its possible **variants**. Rust's enum
 
 ## Defining an enum
 
-```rs
+```rust
 enum IpAddrKind {
   V4,
   V6,
@@ -26,7 +27,7 @@ enum IpAddrKind {
 
 ## Enum values
 
-```rs
+```rust
 // instances of each of the two variants of IpAddrKind
 let four = IpAddrKind::V4;
 let six = IpAddrKind::V6;
@@ -40,7 +41,7 @@ route(IpAddrKind::V6);
 
 Enum + Struct
 
-```rs
+```rust
 enum IpAddrKind {
   V4,
   V6
@@ -64,7 +65,7 @@ let loopback = IpAddr {
 
 Advantage to use an enum rather than a struct: each variant can have different types and amounts of associated data.
 
-```rs
+```rust
 enum IpAddr {
   V4(String),
   V6(String),
@@ -85,7 +86,7 @@ let loopback = IpAddr::V6(String::from("::1"))
 
 You can put any kind of data inside an enum variant, even another enum.
 
-```rs
+```rust
 enum Message{
   Quit, // has no data associated with it at all
   Move {x: i32, y: i32}, // has named fields like a struct does
@@ -96,7 +97,7 @@ enum Message{
 
 Define methods on enums
 
-```rs
+```rust
 impl Message {
   fn call(&self) {
     // method body would be defined here
@@ -117,7 +118,7 @@ Rust does not have the null feature that many other languages have.
 
 The problem with null is that if you try to use a null value as a not-null value, you'll get an error of some kind. Because this null or not-null property is pervastive. The concept that null is trying to express is still a useful one: a null is a value that is currently invalid or absent for some reason.
 
-```rs
+```rust
 // T, a generic type parameter,it means the Some variant of the Option enum can hold one piece of data of any type, and that each concrete type that gets used in place of T makes the overall Option<T> type a different type.
 enum Option<T> {
   None,
@@ -133,7 +134,7 @@ let absent_number: Option<i32> = None;
 
 Think of a `match` expression as being like a coin-sorting machine: coins slide down a track with variously sized holes along it, and each coin falls through the first hole it encounters that it fits into.
 
-```rs
+```rust
 enum Coin {
   Penny,
   Nickel,
@@ -158,7 +159,7 @@ fn value_in_cents(coin: Coin) -> u8 {
 
 ## Patterns that bind to values
 
-```rs
+```rust
 #[derive(Debug)] // so we can inspect the state in a minute
 enum UsState {
   Alabama,
@@ -190,7 +191,7 @@ value_in_cents(Coin::Quarter(UsState::Alaska));
 
 ## Matching with`Option<T>`
 
-```rs
+```rust
 fn plus_one(x: Option<i32>) -> Option<i32> {
   match x {
     None => None,
@@ -209,7 +210,7 @@ Combining `match` and enums is useful in many situations. You'll see this partte
 
 We must exhaust every last possibility in order for the code to be valid. Especially in the case of `Option<T>`, when Rust prevents us from forgetting to handle the `None` case, it protects us from assuming that we have a value when we might have null.
 
-```rs
+```rust
 // will run error, because we did not handle the None case
 fn plus_one(x: Option<i32>) -> Option<i32> {
   match x {
@@ -226,7 +227,7 @@ This `catch-all` pattern meets the requirment that `match` must be exhaustive. N
 
 `()` the empty tuple value here we tells Rust explicitly that we aren't going to use any other value that doesn't match a pattern in an earlier arm, and we don't want to run any code in this case.
 
-```rs
+```rust
 let dice_roll = 9
 // catch-all pattern
 match dice_roll {
@@ -270,7 +271,7 @@ Using `if let` means less typing, less indentation, and less boilerplate code. H
 
 You can think of `if let` as syntax sugar for a `match` that runs code when the value matches one pattern and then ignores all other values.
 
-```rs
+```rust
 let config_max = Some(100);
 match config_max{
   Some(max) => println!("The maximum is configured to {}", max),

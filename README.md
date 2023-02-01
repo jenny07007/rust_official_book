@@ -1,29 +1,16 @@
 #
 
-- [01 rustc](#01-rustc)
-- [02 cargo](#02-cargo)
-- [03 Guessing game](#03-guessing-game)
-- [04 Variables](#04-variables)
-- [05 Data Types](#05-data-types)
-- [06 Functions](#06-functions)
-- [07 Control Flow](#07-control-flow)
-- [08 Ownership](#08-ownership)
-- [09 Strucs](#09-strucs)
-- [10 Enums and pattern matching](#10-enums-and-pattern-matching)
-- [11 Packages, Crates, and Modules](#11-packages-crates-and-modules)
-
-## 01 rustc
-
-```rs
-fu main () {
-  // a rust macro
-  println!("Hello, world!");
-}
-```
-
-- An ahead-of-time compiled language, meaning you can compile a program and dive the executable to someone else, and they can run it even without having Rust installed.
-
-## 02 cargo
+- [](#)
+  - [03 Guessing game](#03-guessing-game)
+  - [04 Variables](#04-variables)
+  - [05 Data Types](#05-data-types)
+  - [06 Functions](#06-functions)
+  - [07 Control Flow](#07-control-flow)
+  - [08 Ownership](#08-ownership)
+  - [09 Strucs](#09-strucs)
+  - [10 Enums and pattern matching](#10-enums-and-pattern-matching)
+  - [11 Packages, Crates, and Modules](#11-packages-crates-and-modules)
+  - [12 Common Collections](#12-common-collections)
 
 ```sh
 cargo new hello-cargo
@@ -83,3 +70,7 @@ cargo build
 ## 11 Packages, Crates, and Modules
 
 [PCM](./PCM.md)
+
+## 12 Common Collections
+
+[Collections](./Collections.md)

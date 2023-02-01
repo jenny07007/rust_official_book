@@ -1,15 +1,16 @@
 #
 
-- [Create a new library named `restaurant`](#create-a-new-library-named-restaurant)
-- [Paths for referring to an item in the module tree](#paths-for-referring-to-an-item-in-the-module-tree)
-- [Starting relative paths with `super`](#starting-relative-paths-with-super)
-- [Making structs and enums public](#making-structs-and-enums-public)
-- [Bring paths into scope with the `use` keyword](#bring-paths-into-scope-with-the-use-keyword)
-- [Re-exporting names with public `use`](#re-exporting-names-with-public-use)
-- [Using external packages](#using-external-packages)
-- [Using nested paths to clean up large use lists](#using-nested-paths-to-clean-up-large-use-lists)
-- [The glob operator](#the-glob-operator)
-- [Separating modules into different files](#separating-modules-into-different-files)
+- [](#)
+  - [Create a new library named `restaurant`](#create-a-new-library-named-restaurant)
+  - [Paths for referring to an item in the module tree](#paths-for-referring-to-an-item-in-the-module-tree)
+  - [Starting relative paths with `super`](#starting-relative-paths-with-super)
+  - [Making structs and enums public](#making-structs-and-enums-public)
+  - [Bring paths into scope with the `use` keyword](#bring-paths-into-scope-with-the-use-keyword)
+  - [Re-exporting names with public `use`](#re-exporting-names-with-public-use)
+  - [Using external packages](#using-external-packages)
+  - [Using nested paths to clean up large use lists](#using-nested-paths-to-clean-up-large-use-lists)
+  - [The glob operator](#the-glob-operator)
+  - [Separating modules into different files](#separating-modules-into-different-files)
 
 ## Create a new library named `restaurant`
 
@@ -47,7 +48,7 @@ A path can take two forms:
 - An **absolute path** starts from a **crate root** by using a crate name (for code from an external crate) or a literal `crate` (for code from the current crate).
 - A **relative path** starts from the current module and uses `self`, `super`, or an identifier in the current module.
 
-```rs
+```rust
 // src/lib.rs
 // won't compile!!!!!!!! private modules!@!@!@!
 mod front_of_house{
@@ -96,7 +97,7 @@ mod back_of_house{
 
 We can use `pub` to designate structs and enums as public, but there are a few extra details.If we use `pub` before a struct defination, we make the struct public, but the struct's fields will still private. We can make each field public or on a case-by-case basis.
 
-```rs
+```rust
 // src/lib.rs
 mod back_of_house{
     pub struct Breakfast{
@@ -127,7 +128,7 @@ pub fn eat_at_restaurant(){
 
 If we make an enum public, all of its variants are then public.
 
-```rs
+```rust
 mod back_of_house{
     pub enum Appetizer{
         Soup,
@@ -149,7 +150,7 @@ Structs are often useful without their fields being public, so struct fields fol
 
 Bringing the function's parent module into scope with `use` means we have to specify the parent module when calling the function. Specifying the parent module when calling the function makes it clear that the function is not locally defined while still minimizing repetition of the full path.
 
-```rs
+```rust
 // src/lib.rs
 mod front_of_house {
     pub mod hosting {
@@ -165,7 +166,7 @@ pub fn eat_at_restaurant() {
 
 When bringing in structs, enums, and other items with `use`, it's idiomatic to specify the full path.
 
-```rs
+```rust
 use std::collection::HashMap;
 fn main() {
     let mut map = HashMap::new();
@@ -175,7 +176,7 @@ fn main() {
 
 Exception if we're bringing two items with the same name into scope with `use` statements, because Rust does not allow that.
 
-```rs
+```rust
 // use parent modules distinguishes the two Result types.
 use std::fmt;
 use std::io;
@@ -194,7 +195,7 @@ When we bring a name into scope with `use`, the name available in the new scope 
 
 Re-exporting is useful when the internal structure of your code is different from how pargrammers calling your code would think about the domain.
 
-```rs
+```rust
 // src/lib.rs
 mod front_of_house {
     pub mod hosting {
@@ -216,7 +217,7 @@ pub fn eat_at_restaurant() {
 rand = "0.8.3"
 ```
 
-```rs
+```rust
 use rand::Rng;
 // std a crate that's external to our package.
 // the standard library is shipped with the Rust languate, we don't need to change Cargo.toml
@@ -229,7 +230,7 @@ fn main() {
 
 ## Using nested paths to clean up large use lists
 
-```rs
+```rust
 // main.rs
 use std::cmp::Ordering;
 use std::io::Write;
@@ -243,13 +244,13 @@ use std::io::{self, Write};
 
 The glob operator is often used when testing to bring everything test into the `tests` module.
 
-```rs
+```rust
 use std::collections::*;
 ```
 
 ## Separating modules into different files
 
-```rs
+```rust
 // src/lib.rs
 mod front_of_house;
 pub use crate::front_of_house::hosting;
@@ -261,12 +262,12 @@ pub fn eat_at_restaurant() {
 
 If we put `hosting.rs` in the src directory, the compiler would expect that code to be in a `hosting` module declared in the crate root, not as a child of the `front_of_house` module. The rules the compiler follows to know what files to look in for modules' code means the dorectories and files more closely match the module tree.
 
-```rs
+```rust
 // src/front_of_house.rs
 pub mod hosting;
 ```
 
-```rs
+```rust
 // src/front_of_house/hosting.rs
 pub fn add_to_waitlist() {}
 ```

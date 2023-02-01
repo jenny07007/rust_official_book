@@ -60,7 +60,7 @@ backyard
     |__ main.rs
 ```
 
-```rs
+```rust
 // src/main.rs
 use crate::garden::vegetables::Asparagus;
 
@@ -74,13 +74,13 @@ fn main() {
 }
 ```
 
-```rs
+```rust
 // src/garden.rs
 // means the code in src/garden/vegetables.rs
 pub mod vegetables;
 ```
 
-```rs
+```rust
 // src/garden/vegetables.rs
 pub struct Asparagus {}
 ```
