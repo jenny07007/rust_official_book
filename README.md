@@ -11,6 +11,7 @@
   - [10 Enums and pattern matching](#10-enums-and-pattern-matching)
   - [11 Packages, Crates, and Modules](#11-packages-crates-and-modules)
   - [12 Common Collections](#12-common-collections)
+  - [13 Error Handling](#13-error-handling)
 
 ```sh
 cargo new hello-cargo
@@ -74,3 +75,7 @@ cargo build
 ## 12 Common Collections
 
 [Collections](./Collections.md)
+
+## 13 Error Handling
+
+[Error handling](./ErrorHandling.md)
