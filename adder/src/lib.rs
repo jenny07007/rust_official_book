@@ -16,6 +16,14 @@ pub fn greeting(name: &str) -> String {
     String::from("Hello!")
 }
 
+pub fn add_two(a: i32) -> i32 {
+    internal_adder(a, 2)
+}
+
+fn internal_adder(a: i32, b: i32) -> i32 {
+    a + b
+}
+
 #[derive(Debug)]
 pub struct Guess {
     value: i32,
