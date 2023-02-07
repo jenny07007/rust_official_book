@@ -13,6 +13,7 @@
   - [12 Common Collections](#12-common-collections)
   - [13 Error Handling](#13-error-handling)
   - [14 Generic Types, Traits, and Lifetimes](#14-generic-types-traits-and-lifetimes)
+  - [15 Automated Tests](#15-automated-tests)
 
 ```sh
 cargo new hello-cargo
@@ -84,3 +85,7 @@ cargo build
 ## 14 Generic Types, Traits, and Lifetimes
 
 [GTL](./GTL.md)
+
+## 15 Automated Tests
+
+[Tests](./Tests.md)
