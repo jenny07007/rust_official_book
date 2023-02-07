@@ -14,6 +14,7 @@
   - [13 Error Handling](#13-error-handling)
   - [14 Generic Types, Traits, and Lifetimes](#14-generic-types-traits-and-lifetimes)
   - [15 Automated Tests](#15-automated-tests)
+  - [16 Building a command line program](#16-building-a-command-line-program)
 
 ```sh
 cargo new hello-cargo
@@ -89,3 +90,7 @@ cargo build
 ## 15 Automated Tests
 
 [Tests](./Tests.md)
+
+## 16 Building a command line program
+
+[minigrep](./Minigrep.md)
