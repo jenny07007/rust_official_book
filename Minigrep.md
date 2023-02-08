@@ -12,6 +12,7 @@
     - [Splitting code into a library crate](#splitting-code-into-a-library-crate)
   - [Developing the library's functionality with TDD(Test-Driven Development)](#developing-the-librarys-functionality-with-tddtest-driven-development)
     - [Writing code to pass the test](#writing-code-to-pass-the-test)
+  - [Working with Enviornment Variables](#working-with-enviornment-variables)
 
 # Setup
 
@@ -371,4 +372,117 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+```
+
+## Working with Enviornment Variables
+
+An option for case-insensitive searching that the user can turn on via an env.
+
+```rust
+pub fn search_case_insentitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    // query is a String rather than a string slice
+    // calling to_lowercase() creates new data rather than referencing existing data
+    let query = query.to_lowercase();
+    let mut results = Vec::new();
+
+    for line in contents.line() {
+        // we beed to add an ampersand '&'
+        // because the contains method is defined to take a string slice
+        if line.to_lowercase().contains(&query) {
+            results.push(line);
+        }
+    }
+    results
+}
+
+
+#[test]
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn case_sensitive() {
+        let query = "duct";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+Duct tape.";
+
+        assert_eq!(vec!["safe, fast, productive."], search(query, contents));
+    }
+
+    #[test]
+    fn case_insensitive() {
+        let query = "rUst";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+Trust me.";
+
+        assert_eq!(
+            vec!["Rust:", "Trust me."],
+            search_case_insentitive(query, contents)
+        )
+    }
+}
+```
+
+> While `to_lowercase` will handle basic Unicode, it won’t be 100% accurate. If we were writing a real application, we’d want to do a bit more work here, but this section is about environment variables, not Unicode, so we’ll leave it at that here.
+
+Note that `query` is now a `String` rather than a `string slice`, **because calling `to_lowercase` creates new data rather than referencing existing data.** Say the query is "rUsT", as an example: that string slice doesn’t contain a lowercase u or t for us to use, so we have to allocate a new `String` containing "rust". **When we pass query as an argument to the contains method now, we need to add an ampersand because the signature of contains is defined to take a string slice.**
+
+```rust
+pub struct Config {
+    // --snip--
+    pub ignore_case: bool;
+}
+
+// change run function
+pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    let contents = fs::read_to_string(config.file_path)?;
+
+    let results = if config.ignore_case {
+        search_case_insentitive(&config.query, &contents)
+    } else {
+        search(&config.query, &contents)
+    }
+    for line in results {
+        println!("{line}");
+    }
+
+    Ok(())
+}
+
+// check for env
+use std::env;
+
+impl Config {
+    pub fn build(args: &[String]) -> Result<Config, &'static str> {
+        if args.len() < 3 {
+            return Err("not enough arguments");
+        }
+
+        let query = args[1].clone();
+        let file_path = args[2].clone();
+
+        let ignore_case = env::var("IGNORE_CASE").is_ok();
+
+        Ok(Config {
+            query,
+            file_path,
+            ignore_case,
+        })
+    }
+}
+```
+
+The `is_ok` method on the `Result` to check whether the environment variable is set, which means the program should do a case-insensitive search. If the `IGNORE_CASE` environment variable isn’t set to anything, `is_ok` will return false and the program will perform a case-sensitive search. **We don’t care about the value of the environment variable, just whether it’s set or unset, so we’re checking `is_ok` rather than using `unwrap`, `expect`, or any of the other methods we’ve seen on `Result`.**
+
+```sh
+cargo run -- to poem.txt
+
+IGNORE_CASE=1 cargo run -- to poem.txt
 ```
