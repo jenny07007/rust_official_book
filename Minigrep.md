@@ -13,6 +13,9 @@
   - [Developing the library's functionality with TDD(Test-Driven Development)](#developing-the-librarys-functionality-with-tddtest-driven-development)
     - [Writing code to pass the test](#writing-code-to-pass-the-test)
   - [Working with Enviornment Variables](#working-with-enviornment-variables)
+  - [Writing error messages to standard error instead of standard output](#writing-error-messages-to-standard-error-instead-of-standard-output)
+    - [Checking where errors are written](#checking-where-errors-are-written)
+    - [Printing errors to standard error](#printing-errors-to-standard-error)
 
 # Setup
 
@@ -227,6 +230,7 @@ Returning a `Err` value from `Config::build` allows the `main` function to handl
 `unwrap_or_else`, which is defined on `Result<T, E>` by the standard library. Using `unwrap_or_else` allows us to define some custom, non-`panic!` error handling. If the Result is an `Ok` value, this method’s behavior is similar to `unwrap`: it returns the inner value `Ok` is wrapping. However, if the value is an `Err` value, this method calls the code in the **closure**, which is an anonymous function we define and pass as an argument to `unwrap_or_else`.
 
 ```rust
+// exit the program without panicking
 use std::process;
 
 fn main() {
@@ -311,7 +315,7 @@ Add the searching logic to the `minigrep` program using RDD process with the fol
 4. Repeat from step 1!
 
 ```rust
-
+// when we return a reference from a function, we have to tie the lifetime if that reference to the lifetime of one of the input parameters
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     vec![]
 }
@@ -449,6 +453,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     } else {
         search(&config.query, &contents)
     }
+
     for line in results {
         println!("{line}");
     }
@@ -485,4 +490,44 @@ The `is_ok` method on the `Result` to check whether the environment variable is 
 cargo run -- to poem.txt
 
 IGNORE_CASE=1 cargo run -- to poem.txt
+```
+
+## Writing error messages to standard error instead of standard output
+
+At the moment, we’re writing all of our output to the terminal using the `println!` macro. In most terminals, there are two kinds of output: **standard output (stdout)** for general information and **standard error (stderr)** for error messages. **This distinction enables users to choose to direct the successful output of a program to a file but still print error messages to the screen.**
+
+The `println!` macro is only capable of printing to standard output, so we have to use something else to print to standard error.
+
+### Checking where errors are written
+
+Command line programs are expected to send error messages to the standard error stream so we can still see error messages on the screen even if we redirect the standard output stream to a file. Our program is not currently well-behaved: we’re about to see that it saves the error message output to a file instead!
+
+```sh
+# the > tells the shell to write the contents of standard output to output.txt instead of the screen
+cargo run > output.txt
+```
+
+### Printing errors to standard error
+
+```rust
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    let config = Config::build(&args).unwrap_or_else(|err| {
+        eprintln!("Problem parsing argument: {err}");
+        process::exit(1);
+    });
+
+    if let Err(e) = minigrep::run(config) {
+        eprintln!("Application error: {e}");
+        process::exit(1);
+    }
+}
+```
+
+```sh
+# The error onscreen and `output.txt` contains nothing
+cargo run > output.txt
+
+# wont see any output to the terminal, and output.txt will contain our results
+cargo run -- to poem.txt output.txt
 ```
